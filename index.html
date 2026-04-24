@@ -15,7 +15,7 @@
       <div>
         <p class="eyebrow">GitHub Pages Edition</p>
         <h1>日文單字複習</h1>
-        <p class="hero-copy">登入後直接同步 Supabase，支援查單字、複習、建立新字卡與瀏覽器日文語音。</p>
+        <p class="hero-copy">登入後直接同步 Supabase，支援查單字、複習、新增字卡與瀏覽器日文語音。</p>
       </div>
       <button id="sign-out-button" class="ghost-button hidden" type="button">登出</button>
     </header>
@@ -24,7 +24,7 @@
       <section id="auth-panel" class="card auth-card">
         <div class="section-heading">
           <h2>帳號登入</h2>
-          <p>用 Supabase Email + Password 登入。第一次也可以直接註冊。</p>
+          <p>使用 Supabase 的 Email + Password。第一次也可以直接註冊。</p>
         </div>
 
         <form id="auth-form" class="stack-form">
@@ -44,7 +44,7 @@
 
         <div class="helper-block">
           <p id="auth-status" class="status-line">尚未登入</p>
-          <p class="helper-text">如果你在 Supabase 開了 Email confirmation，第一次註冊後要先去信箱驗證。</p>
+          <p class="helper-text">如果你在 Supabase 開了 Email 驗證，第一次註冊後要先去信箱驗證。</p>
         </div>
       </section>
 
@@ -69,7 +69,7 @@
           <div class="card">
             <div class="section-heading">
               <h2>今日總覽</h2>
-              <p>資料會只顯示你自己的單字，不會看到別人的內容。</p>
+              <p>資料只會顯示你自己的單字。複習頁可以先設定等級範圍、題數和循環方式。</p>
             </div>
             <div class="button-row">
               <button id="start-review-button" type="button">開始複習</button>
@@ -83,11 +83,53 @@
           <div class="card">
             <div class="section-heading">
               <h2>複習模式</h2>
-              <p>第 3、6、9 次播放同一段文字時，會自動切成慢速語音。</p>
+              <p>可先選等級範圍和題數。按「還在學」會排進下一輪，並把下次複習寫成 30 分鐘後。</p>
+            </div>
+
+            <div class="review-setup">
+              <label>
+                <span>起始等級</span>
+                <select id="review-min-level">
+                  <option value="N5">N5</option>
+                  <option value="N4">N4</option>
+                  <option value="N3">N3</option>
+                  <option value="N2">N2</option>
+                  <option value="N1">N1</option>
+                </select>
+              </label>
+              <label>
+                <span>結束等級</span>
+                <select id="review-max-level">
+                  <option value="N5">N5</option>
+                  <option value="N4">N4</option>
+                  <option value="N3">N3</option>
+                  <option value="N2">N2</option>
+                  <option value="N1">N1</option>
+                </select>
+              </label>
+              <label>
+                <span>本次題數</span>
+                <select id="review-batch-size">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20" selected>20</option>
+                </select>
+              </label>
+              <label class="checkbox-row">
+                <input id="review-due-only" type="checkbox" checked>
+                <span>只看到期單字</span>
+              </label>
+              <div class="button-row compact">
+                <button id="apply-review-filter-button" type="button">套用範圍</button>
+                <button id="test-audio-button" type="button" class="ghost-button small-button">測試語音</button>
+              </div>
+              <p id="review-filter-summary" class="helper-text">目前範圍：N5 到 N5，只看到期單字，本次 20 題。</p>
+              <p id="audio-status" class="helper-text">語音狀態：待命中</p>
             </div>
 
             <div id="review-empty" class="empty-state hidden">
-              <p>目前沒有到期或待複習的單字。</p>
+              <p>目前沒有符合這個複習範圍的單字。</p>
             </div>
 
             <div id="review-card" class="review-card hidden">
@@ -120,7 +162,7 @@
           <div class="card">
             <div class="section-heading">
               <h2>單字庫</h2>
-              <p>支援 JLPT 篩選和關鍵字搜尋。</p>
+              <p>支援 JLPT 篩選、搜尋與直接播放語音。</p>
             </div>
 
             <div class="filters">

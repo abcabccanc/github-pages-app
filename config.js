@@ -4,5 +4,9 @@ window.APP_CONFIG = {
   appName: "日文單字複習",
   defaultLevel: "N5",
   slowPlaybackRate: 0.6,
-  normalPlaybackRate: 0.95
+  normalPlaybackRate: 0.95,
+  minimumReviewMinutes: 30,
+  preferGeminiTts: true,
+  geminiTtsBaseUrl: "http://127.0.0.1:8787",
+  geminiTtsVoice: "Kore"
 };
