@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日文單字複習</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">GitHub Pages Edition</p>
+        <h1>日文單字複習</h1>
+        <p class="hero-copy">登入後直接同步 Supabase，支援查單字、複習、建立新字卡與瀏覽器日文語音。</p>
+      </div>
+      <button id="sign-out-button" class="ghost-button hidden" type="button">登出</button>
+    </header>
+
+    <main class="layout">
+      <section id="auth-panel" class="card auth-card">
+        <div class="section-heading">
+          <h2>帳號登入</h2>
+          <p>用 Supabase Email + Password 登入。第一次也可以直接註冊。</p>
+        </div>
+
+        <form id="auth-form" class="stack-form">
+          <label>
+            <span>Email</span>
+            <input id="auth-email" name="email" type="email" autocomplete="email" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="auth-password" name="password" type="password" autocomplete="current-password" minlength="6" required>
+          </label>
+          <div class="button-row">
+            <button id="sign-in-button" type="submit">登入</button>
+            <button id="sign-up-button" type="button" class="secondary-button">註冊</button>
+          </div>
+        </form>
+
+        <div class="helper-block">
+          <p id="auth-status" class="status-line">尚未登入</p>
+          <p class="helper-text">如果你在 Supabase 開了 Email confirmation，第一次註冊後要先去信箱驗證。</p>
+        </div>
+      </section>
+
+      <section id="setup-panel" class="card hidden">
+        <div class="section-heading">
+          <h2>設定未完成</h2>
+          <p id="setup-message">請先在 <code>config.js</code> 填入 Supabase URL 和 anon key。</p>
+        </div>
+      </section>
+
+      <section id="app-panel" class="hidden app-shell">
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <nav class="tab-bar" aria-label="主功能">
+          <button class="tab-button active" data-tab="home" type="button">首頁</button>
+          <button class="tab-button" data-tab="review" type="button">複習</button>
+          <button class="tab-button" data-tab="browse" type="button">單字庫</button>
+          <button class="tab-button" data-tab="add" type="button">新增</button>
+        </nav>
+
+        <section class="tab-panel active" data-panel="home">
+          <div class="card">
+            <div class="section-heading">
+              <h2>今日總覽</h2>
+              <p>資料會只顯示你自己的單字，不會看到別人的內容。</p>
+            </div>
+            <div class="button-row">
+              <button id="start-review-button" type="button">開始複習</button>
+              <button id="refresh-button" type="button" class="secondary-button">重新整理</button>
+            </div>
+            <div id="home-summary" class="summary-list"></div>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="review">
+          <div class="card">
+            <div class="section-heading">
+              <h2>複習模式</h2>
+              <p>第 3、6、9 次播放同一段文字時，會自動切成慢速語音。</p>
+            </div>
+
+            <div id="review-empty" class="empty-state hidden">
+              <p>目前沒有到期或待複習的單字。</p>
+            </div>
+
+            <div id="review-card" class="review-card hidden">
+              <p class="review-kicker" id="review-progress">0 / 0</p>
+              <h3 id="review-word" class="jp-word-large">-</h3>
+              <div class="review-actions-inline">
+                <button id="review-word-audio" type="button" class="ghost-button small-button">播放單字</button>
+                <button id="review-sentence-audio" type="button" class="ghost-button small-button">播放例句</button>
+              </div>
+              <p id="review-example" class="review-example">-</p>
+              <button id="toggle-answer-button" type="button" class="secondary-button">顯示答案</button>
+
+              <div id="review-answer" class="review-answer hidden">
+                <p><strong>假名：</strong><span id="review-reading">-</span></p>
+                <p><strong>羅馬字：</strong><span id="review-romaji">-</span></p>
+                <p><strong>中文：</strong><span id="review-meaning">-</span></p>
+                <p><strong>例句假名：</strong><span id="review-example-reading">-</span></p>
+                <p><strong>例句翻譯：</strong><span id="review-example-zh">-</span></p>
+              </div>
+
+              <div class="button-row">
+                <button id="remembered-button" type="button">記得</button>
+                <button id="learning-button" type="button" class="secondary-button">還在學</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="browse">
+          <div class="card">
+            <div class="section-heading">
+              <h2>單字庫</h2>
+              <p>支援 JLPT 篩選和關鍵字搜尋。</p>
+            </div>
+
+            <div class="filters">
+              <label>
+                <span>搜尋</span>
+                <input id="search-input" type="search" placeholder="輸入日文或中文">
+              </label>
+              <label>
+                <span>等級</span>
+                <select id="level-filter">
+                  <option value="ALL">全部</option>
+                  <option value="N5">N5</option>
+                  <option value="N4">N4</option>
+                  <option value="N3">N3</option>
+                  <option value="N2">N2</option>
+                  <option value="N1">N1</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="browse-list" class="word-list"></div>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="add">
+          <div class="card">
+            <div class="section-heading">
+              <h2>新增單字</h2>
+              <p>新增後會立刻同步到 Supabase，也會出現在你其他裝置上。</p>
+            </div>
+
+            <form id="add-form" class="stack-form">
+              <label>
+                <span>日文</span>
+                <input name="jp_word" required>
+              </label>
+              <label>
+                <span>平假名</span>
+                <input name="jp_word1">
+              </label>
+              <label>
+                <span>片假名 / 補充</span>
+                <input name="jp_word2">
+              </label>
+              <label>
+                <span>羅馬字</span>
+                <input name="romaji">
+              </label>
+              <label>
+                <span>中文意思</span>
+                <input name="zh_word">
+              </label>
+              <label>
+                <span>例句</span>
+                <textarea name="example_sentence" rows="2"></textarea>
+              </label>
+              <label>
+                <span>例句假名</span>
+                <textarea name="example_hiragana" rows="2"></textarea>
+              </label>
+              <label>
+                <span>例句翻譯</span>
+                <textarea name="example_zh" rows="2"></textarea>
+              </label>
+              <label>
+                <span>JLPT 等級</span>
+                <select name="level">
+                  <option value="N5">N5</option>
+                  <option value="N4">N4</option>
+                  <option value="N3">N3</option>
+                  <option value="N2">N2</option>
+                  <option value="N1">N1</option>
+                </select>
+              </label>
+              <button type="submit">新增單字</button>
+            </form>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <template id="stat-card-template">
+    <article class="stat-card">
+      <p class="stat-label"></p>
+      <p class="stat-value"></p>
+    </article>
+  </template>
+
+  <template id="word-item-template">
+    <article class="word-item">
+      <div class="word-item-top">
+        <div>
+          <h3 class="word-title"></h3>
+          <p class="word-reading"></p>
+        </div>
+        <span class="level-pill"></span>
+      </div>
+      <p class="word-meaning"></p>
+      <p class="word-example"></p>
+      <div class="word-meta"></div>
+      <div class="button-row compact">
+        <button type="button" class="ghost-button small-button play-word-button">播放單字</button>
+        <button type="button" class="ghost-button small-button play-sentence-button">播放例句</button>
+        <button type="button" class="ghost-button small-button delete-word-button">刪除</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
